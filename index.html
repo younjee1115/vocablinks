@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>능률VOCA 중등 기본 [2025] DAY 01~50</title>
+  <title>능률VOCA [2025] 단어장 모음</title>
   <style>
     :root {
       --bg: #f7f8fb;
@@ -14,6 +14,7 @@
       --accent: #2563eb;
       --accent-hover: #1d4ed8;
     }
+
     * { box-sizing: border-box; }
 
     body {
@@ -35,7 +36,7 @@
       border: 1px solid var(--line);
       border-radius: 20px;
       padding: 28px 24px;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
     }
 
@@ -48,6 +49,36 @@
       margin: 0;
       color: var(--muted);
       font-size: 0.98rem;
+    }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .tab-btn {
+      background: var(--card);
+      border: 1px solid var(--line);
+      color: var(--text);
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .tab-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .tab-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #ffffff;
     }
 
     .list {
@@ -120,44 +151,119 @@
 <body>
   <div class="wrap">
     <section class="header">
-      <h1>능률VOCA 중등 기본 [2025]</h1>
-      <p class="desc">DAY 01부터 DAY 50까지 바로 열 수 있는 링크 모음입니다.</p>
+      <h1 id="bookTitle">능률VOCA 중등 기본 [2025]</h1>
+      <p class="desc" id="bookDesc">DAY 01부터 DAY 50까지 바로 열 수 있는 링크 모음입니다.</p>
     </section>
+
+    <nav class="tabs" id="tabMenu"></nav>
 
     <section class="list" id="dayList"></section>
 
     <footer>
-      GitHub Pages에 index.html로 올리면 바로 공유할 수 있습니다.
+      원하는 단어장을 선택한 뒤 DAY 버튼을 눌러 클래스카드로 이동하세요.
     </footer>
   </div>
 
   <script>
-    const baseId = 25380956;
-    const totalDays = 50;
-    const baseTitle = '능률VOCA 중등 기본 [2025]';
+    // 단어장 설정 목록 (클래스카드 각 단어장의 DAY 01 setId 및 총 DAY 수 입력)
+    const books = [
+      {
+        id: 'middle-basic',
+        tabName: '중등 기본',
+        title: '능률VOCA 중등 기본 [2025]',
+        baseId: 25380956,
+        totalDays: 50
+      },
+      {
+        id: 'middle-high',
+        tabName: '중등 고난도',
+        title: '능률VOCA 중등 고난도 [2025]',
+        baseId: 25381006, // 실제 DAY 01 세트 번호로 변경 필요
+        totalDays: 50
+      },
+      {
+        id: 'high-basic',
+        tabName: '고등 기본',
+        title: '능률VOCA 고등 기본 [2025]',
+        baseId: 25381056, // 실제 DAY 01 세트 번호로 변경 필요
+        totalDays: 60
+      },
+      {
+        id: 'high-complete',
+        tabName: '고등 완성',
+        title: '능률VOCA 고등 완성 [2025]',
+        baseId: 25381116, // 실제 DAY 01 세트 번호로 변경 필요
+        totalDays: 60
+      }
+    ];
+
+    const bookTitleEl = document.getElementById('bookTitle');
+    const bookDescEl = document.getElementById('bookDesc');
+    const tabMenu = document.getElementById('tabMenu');
     const dayList = document.getElementById('dayList');
 
-    for (let day = 1; day <= totalDays; day++) {
-      const setId = baseId + (day - 1);
-      const dayText = String(day).padStart(2, '0');
-      const url = `https://www.classcard.net/set/${setId}`;
+    let currentBookId = books[0].id;
 
-      const link = document.createElement('a');
-      link.href = url;
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
-      link.className = 'item';
-
-      link.innerHTML = `
-        <div class="left">
-          <span class="day">DAY ${dayText}</span>
-          <span class="title">${baseTitle} DAY ${dayText}</span>
-        </div>
-        <span class="go">열기</span>
-      `;
-
-      dayList.appendChild(link);
+    function renderTabs() {
+      tabMenu.innerHTML = '';
+      books.forEach(book => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `tab-btn ${book.id === currentBookId ? 'active' : ''}`;
+        btn.textContent = book.tabName;
+        btn.addEventListener('click', () => {
+          currentBookId = book.id;
+          renderTabs();
+          renderList(book);
+        });
+        tabMenu.appendChild(btn);
+      });
     }
+
+    function renderList(book) {
+      bookTitleEl.textContent = book.title;
+      bookDescEl.textContent = `DAY 01부터 DAY ${String(book.totalDays).padStart(2, '0')}까지 바로 열 수 있는 링크 모음입니다.`;
+      
+      dayList.innerHTML = '';
+      const fragment = document.createDocumentFragment();
+
+      for (let day = 1; day <= book.totalDays; day++) {
+        const setId = book.baseId + (day - 1);
+        const dayText = String(day).padStart(2, '0');
+        const url = `https://www.classcard.net/set/${setId}`;
+
+        const link = document.createElement('a');
+        link.href = url;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.className = 'item';
+
+        const left = document.createElement('div');
+        left.className = 'left';
+
+        const daySpan = document.createElement('span');
+        daySpan.className = 'day';
+        daySpan.textContent = `DAY ${dayText}`;
+
+        const titleSpan = document.createElement('span');
+        titleSpan.className = 'title';
+        titleSpan.textContent = `${book.title} DAY ${dayText}`;
+
+        const goSpan = document.createElement('span');
+        goSpan.className = 'go';
+        goSpan.textContent = '열기';
+
+        left.append(daySpan, titleSpan);
+        link.append(left, goSpan);
+        fragment.appendChild(link);
+      }
+
+      dayList.appendChild(fragment);
+    }
+
+    // 초기 렌더링
+    renderTabs();
+    renderList(books[0]);
   </script>
 </body>
 </html>
